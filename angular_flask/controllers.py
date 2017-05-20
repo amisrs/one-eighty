@@ -464,15 +464,19 @@ def complete(courseid):
             joined_item['StudentID'] = enrol.StudentID
             if joined_item['category'] == current_course.category:
                 joined_items.append(joined_item)
-
         done_count = len(joined_items)
+        print "YOU HAVE DONE: " + str(done_count) + " many "
         for achievement in achievements:
+            print "did you get achievement: " + achievement.name
+            print "you need " + str(achievement.count)
             achievement_record = AchievementRecord.query\
                 .filter(AchievementRecord.StudentID == student.StudentID)\
                 .filter(AchievementRecord.AchievementID == achievement.AchievementID)\
                 .first()
+            print achievement_record
 
             if achievement.count <= done_count and achievement_record.status == 'unearned':
+                print "GOT ACHIEVEMENT: " + achievement.name
                 achievement_record.status = 'earned'
 
 

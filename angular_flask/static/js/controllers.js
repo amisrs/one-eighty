@@ -273,4 +273,22 @@ app.controller('IndexController', ['$scope', '$http', '$window', function ($scop
 	$scope.go_back = function() {
 		$window.history.back();
 	}
+}])
+.controller('AchievementListController', ['$scope', '$routeParams', '$http', '$window', function($scope, $routeParams, $http, $window) {
+	var endpoint = '/api/student/' + $routeParams.StudentID + '/achievements';
+	$http.get(endpoint)
+		.then(function(success) {
+				console.log(success);
+				if(success.data !== "no achievements") {
+					$scope.earned = success.data[0];
+					$scope.unearned = success.data[1];
+				} else {
+					$scope.earned = [];
+					$scope.unearned = [];
+					console.log($scope.earned.length === 0);
+					console.log($scope.earned.length)
+				}
+		}, function(error) {
+			console.log(error)
+		});
 }]);

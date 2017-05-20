@@ -166,8 +166,17 @@ def create_user():
         print inserted_user
         if json_data['userType'] == 'student':
             new_student = Student(None, inserted_user.UserID, supervisor.SupervisorID)
+
+
+
             db.session.add(new_student)
             db.session.commit()
+            achievements = Achievement.query.all()
+            for achievement in achievements:
+                new_ar = AchievementRecord(new_student.StudentID, achievement.AchievementID, 'unearned')
+                db.session.add(new_ar)
+                db.session.commit()
+
         elif json_data['userType'] == 'supervisor':
             new_supervisor = Supervisor(None, inserted_user.UserID)
             db.session.add(new_supervisor)
@@ -206,6 +215,35 @@ def get_enrolled_courses_user(user_id):
     result.append(ongoing_courses)
     result.append(completed_courses)
     return str(result)
+
+@app.route('/api/student/<student_id>/achievements', methods=['GET'])
+def get_achievement_records(student_id):
+    result = []
+    unearned = []
+    earned = []
+    achievement_records = AchievementRecord.query.filter(AchievementRecord.StudentID == student_id).all()
+    print achievement_records
+    if achievement_records == None:
+        return "no achievements"
+    for achievement_record in achievement_records:
+        achievement = Achievement.query.filter(Achievement.AchievementID == achievement_record.AchievementID).first()
+        if achievement_record.status == 'earned':
+            earned.append(achievement)
+        else:
+            unearned.append(achievement)
+    result.append(earned)
+    result.append(unearned)
+    return str(result)
+
+@app.route('/api/achievements/<achievement_id>', methods=['GET'])
+def get_achievement(achievement_id):
+    achievement = Achievement.query.filter(Achievement.AchievementID == achievement_id).first()
+    return str(achievement)
+
+@app.route('/api/achievements/category/<category>', methods=['GET'])
+def get_achievements_by_category(category):
+    achievements = Achievement.query.filter(Achievement.AchievementID == achievement_id)
+    return str(achievement)
 
 @app.route('/api/student/<student_id>/course', methods=['GET'])
 def get_enrolled_courses(student_id):
@@ -408,6 +446,36 @@ def complete(courseid):
             .filter(Enrolment.StudentID == student.StudentID)\
             .filter(Enrolment.CourseID == int(courseid)).first()
         enrolment.status = 'completed'
+
+        current_course = Course.query.filter(Course.CourseID == courseid).first()
+        achievements = Achievement.query.filter(Achievement.category == current_course.category).all()
+
+        course_joins = db.session.query(Course, Enrolment).join(Enrolment)\
+            .filter(Enrolment.StudentID == student.StudentID)\
+            .filter(Enrolment.status == "completed").all()
+
+        joined_items = []
+        for (course, enrol) in course_joins:
+            joined_item = {}
+            print course_joins
+            joined_item['CourseID'] = course.CourseID
+            joined_item['category'] = course.category
+            joined_item['status'] = enrol.status
+            joined_item['StudentID'] = enrol.StudentID
+            if joined_item['category'] == current_course.category:
+                joined_items.append(joined_item)
+
+        done_count = len(joined_items)
+        for achievement in achievements:
+            achievement_record = AchievementRecord.query\
+                .filter(AchievementRecord.StudentID == student.StudentID)\
+                .filter(AchievementRecord.AchievementID == achievement.AchievementID)\
+                .first()
+
+            if achievement.count <= done_count and achievement_record.status == 'unearned':
+                achievement_record.status = 'earned'
+
+
         db.session.commit()
     return "OK"
 

@@ -294,6 +294,57 @@ class Submission(db.Model):
             'item': str(self.item)
         })
 
+class Achievement(db.Model):
+    AchievementID = db.Column(db.Integer, primary_key=True)
+    category = db.Column(db.String(45))
+    count = db.Column(db.Integer)
+    name = db.Column(db.String(45))
+    image = db.Column(db.String(255))
+
+    def __call__(arg1, arg2, arg3):
+        print "call Achievement"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, AchievementID, category, count, name, image):
+        self.AchievementID = AchievementID
+        self.category = category
+        self.count = count
+        self.name = name
+        self.image = image
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'AchievementID': self.AchievementID,
+            'category': self.category,
+            'count': self.count,
+            'name': self.name,
+            'image': self.image
+        })
+
+class AchievementRecord(db.Model):
+    __tablename__ = 'achievement_record'
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), primary_key=True)
+    AchievementID = db.Column(db.Integer, db.ForeignKey('achievement.AchievementID'), primary_key=True)
+    status = db.Column(db.String(45))
+
+    def __call__(arg1, arg2, arg3):
+        print "call Achievement_Record"
+        #print str(arg1) + " | " + str(arg2) + " | " + str(arg3)
+
+    def __init__(self, StudentID, AchievementID, status):
+        self.StudentID = StudentID
+        self.AchievementID = AchievementID
+        self.status = status
+
+    def __repr__(self):
+        #return '<user %r>' % (self.login + '-' + str(self.UserID))
+        return json.dumps({
+            'StudentID': self.StudentID,
+            'AchievementID': self.AchievementID,
+            'status': self.status,
+        })
+
 # models for which we want to create API endpoints
 app.config['API_MODELS'] = {
                                 'course': Course,
@@ -306,7 +357,9 @@ app.config['API_MODELS'] = {
                                 'project': Project,
                                 'enrolment': Enrolment,
                                 'application': Application,
-                                'submission': Submission
+                                'submission': Submission,
+                                'achievement': Achievement,
+                                'achievement_record': AchievementRecord
                             }
 
 # models for which we want to create CRUD-style URL endpoints,
@@ -322,5 +375,7 @@ app.config['CRUD_URL_MODELS'] = {
                                     'project': Project,
                                     'enrolment': Enrolment,
                                     'application': Application,
-                                    'submission': Submission
+                                    'submission': Submission,
+                                    'achievement': Achievement,
+                                    'achievement_record': AchievementRecord
                                 }

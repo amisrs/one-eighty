@@ -1,0 +1,20 @@
+<div class="col-md-2">
+  <b>ID</b>
+</div>
+<div class="col-md-4">
+  <b>Login</b>
+</div>
+<div class="col-md-6">
+  <b>Type</b>
+</div>
+<div ng-repeat="user in users">
+  <div class="col-md-2">
+    {{ user.UserID }}
+  </div>
+  <div class="col-md-4">
+    {{ user.login }}
+  </div>
+  <div class="col-md-6">
+    {{user.userType }}
+  </div>
+</div>

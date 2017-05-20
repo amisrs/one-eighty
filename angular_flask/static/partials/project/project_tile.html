@@ -1,0 +1,15 @@
+<div class="card course-tile">
+  <a href="/project/{{ project.ProjectID }}"><span></span></a>
+  <div class="card-img-top cardback">
+    <img class="tile-img" src="{{ project.thumbnail }}">
+    <div class="cardback-payment">
+      ${{ project.payment }}
+    </div>
+  </div>
+  <div class="card-block cardfront">
+    <h4 class="card-title">
+      {{ project.title }}
+    </h4>
+    <p class="card-text">{{ project.description }}<p>
+  </div>
+</div>

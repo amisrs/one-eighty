@@ -1,0 +1,45 @@
+<a class="btn btn-link" href="/course/">back</a>
+<!-- <p><a href="/course/">back</a></p> -->
+
+<div class="jumbotron">
+	<img class="banner-img" src="{{ course.header_image }}">
+</div>
+
+<div class="container">
+
+	<div class="row">
+		<div class="col-md-10">
+			<h2>{{ course.title }}</h2>
+		</div>
+		<div class="col-md-2 pull-right" ng-if="!isEnrolled && enrolment.status !== 'completed'">
+			<form ng-submit="enrol()">
+				<input class="btn btn-success header-button" type="submit" value="Enrol">
+			</form>
+		</div>
+		<div class="col-md-2 pull-right" ng-if="isEnrolled && enrolment.status !== 'completed'">
+			<form ng-submit="unenrol()">
+				<input class="btn btn-danger header-button" type="submit" value="Drop Course">
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<h4>{{ course.description }}</h4>
+		</div>
+	</div>
+	<div ng-if="isEnrolled">
+		<hr />
+		<div class="html-content" ng-bind-html="htmlContent"></div>
+
+		<div class="row" ng-if="enrolment.status !== 'completed'">
+			<div class="col-md-12">
+				<form ng-submit="complete()">
+					<input class="btn btn-success complete-button" type="submit" value="Complete Course">
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+
+</div>
